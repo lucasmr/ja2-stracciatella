@@ -9,7 +9,8 @@ file(GLOB_RECURSE SOURCE_FILES ${GLOB_RECURSE_SOURCES})
 set(NEW_MD5_DATA "")
 foreach(FILE_PATH ${SOURCE_FILES})
     file(MD5 "${FILE_PATH}" FILE_MD5)
-    set(NEW_MD5_DATA "${NEW_MD5_DATA}${FILE_MD5} ${FILE_PATH}\n")
+    file(TIMESTAMP "${FILE_PATH}" FILE_TIMESTAMP)
+    set(NEW_MD5_DATA "${NEW_MD5_DATA}${FILE_TIMESTAMP};${FILE_MD5};${FILE_PATH}\n")
 endforeach()
 
 # read the old md5 data
