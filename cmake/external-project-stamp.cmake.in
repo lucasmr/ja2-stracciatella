@@ -1,6 +1,6 @@
 set(GLOB_RECURSE_SOURCES @STAMP_GLOB_RECURSE_SOURCES@)
 set(MD5_FILE "@STAMP_MD5_FILE@")
-set(UPDATE_FILE "@STAMP_UPDATE_FILE@")
+set(STAMP_DIR "@STAMP_DIR@")
 
 # get a list of source files
 file(GLOB_RECURSE SOURCE_FILES ${GLOB_RECURSE_SOURCES})
@@ -21,9 +21,12 @@ endif()
 # update if md5 data is different
 if(NOT "${OLD_MD5_DATA}" STREQUAL "${NEW_MD5_DATA}")
     file(WRITE "${MD5_FILE}" "${NEW_MD5_DATA}")
-    # XXX can be replaced with file(TOUCH_NOCREATE "${UPDATE_FILE}") in cmake 3.12
-    if(EXISTS "${UPDATE_FILE}")
-        file(WRITE "${UPDATE_FILE}" "")
-    endif()
+    file(GLOB_RECURSE stamp_files "${STAMP_DIR}/*")
+    foreach (stamp_file IN ITEMS ${stamp_files})
+        if("${stamp_file}" MATCHES "-update$")
+            # XXX replace with file(TOUCH_NOCREATE "${stamp_file}") in cmake 3.12
+            file(WRITE "${stamp_file}" "")
+        endif()
+    endforeach()
 endif()
 

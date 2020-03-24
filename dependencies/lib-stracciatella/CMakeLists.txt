@@ -30,7 +30,7 @@ set(STAMP_GLOB_RECURSE_SOURCES
     "${CMAKE_SOURCE_DIR}/rust/*.rs"
 )
 set(STAMP_MD5_FILE "${CMAKE_CURRENT_BINARY_DIR}/stracciatella-stamp.md5")
-set(STAMP_UPDATE_FILE "${CMAKE_CURRENT_BINARY_DIR}/stracciatella-prefix/src/stracciatella-stamp/stracciatella-update")
+get_target_property(STAMP_DIR stracciatella _EP_STAMP_DIR)
 configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/external-project-stamp.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/external-project-stamp.cmake"
