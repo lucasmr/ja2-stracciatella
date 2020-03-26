@@ -14,6 +14,7 @@
 #define _MOUSE_SYSTEM_H_
 
 #include "JA2Types.h"
+#include "SGPStrings.h"
 #include "Types.h"
 
 #define _JA2_RENDER_DIRTY // Undef this if not using the JA2 Dirty Rectangle System.
@@ -40,7 +41,7 @@ struct MOUSE_REGION
 	void Enable()  { uiFlags |=  MSYS_REGION_ENABLED; }
 	void Disable() { uiFlags &= ~MSYS_REGION_ENABLED; }
 
-	void SetFastHelpText(wchar_t const* text);
+	void SetFastHelpText(const ST::string& str);
 
 	void AllowDisabledRegionFastHelp(bool allow);
 
@@ -75,7 +76,7 @@ struct MOUSE_REGION
 
 	//Fast help vars.
 	INT16            FastHelpTimer; // Countdown timer for FastHelp text
-	wchar_t*         FastHelpText;  // Text string for the FastHelp (describes buttons if left there a while)
+	ST::string       FastHelpText;  // Text string for the FastHelp (describes buttons if left there a while)
 	BACKGROUND_SAVE* FastHelpRect;
 
 	MOUSE_REGION* next; // List maintenance, do NOT touch these entries
