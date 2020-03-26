@@ -1,6 +1,7 @@
 #ifndef __RENDER_DIRTY_H
 #define __RENDER_DIRTY_H
 
+#include "SGPStrings.h"
 #include "JA2Types.h"
 
 
@@ -37,7 +38,7 @@ struct VIDEO_OVERLAY
 	INT16            sY;
 	UINT8            ubFontBack;
 	UINT8            ubFontFore;
-	wchar_t          zText[200];
+	ST::string       zText;
 	SGPVSurface*     uiDestBuff;
 	OVERLAY_CALLBACK BltCallback;
 };
@@ -69,16 +70,27 @@ void             EmptyBackgroundRects(void);
 void             RestoreExternBackgroundRectGivenID(const BACKGROUND_SAVE*);
 
 
-void GDirtyPrint(INT16 x, INT16 y, wchar_t const* str);
-void GDirtyPrintF(INT16 x, INT16 y, wchar_t const* fmt, ...);
+void GDirtyPrint(INT16 x, INT16 y, const ST::utf32_buffer& codepoints);
+void GDirtyPrint(INT16 x, INT16 y, const ST::string& str);
+template <typename ... T>
+inline void GDirtyPrintF(INT32 x, INT32 y, const ST::string& fmt_printf, T&& ... args)
+{
+	GDirtyPrint(x, y, st_format_printf(ST::substitute_invalid, fmt_printf, std::forward<T>(args) ...));
+}
 
-void GPrintInvalidate(INT16 x, INT16 y, wchar_t const* str);
-void GPrintInvalidateF(INT16 x, INT16 y, wchar_t const* fmt, ...);
+void GPrintInvalidate(INT16 x, INT16 y, const ST::utf32_buffer& codepoints);
+void GPrintInvalidate(INT16 x, INT16 y, const ST::string& str);
+template <typename ... T>
+inline void GPrintInvalidateF(INT32 x, INT32 y, const ST::string& fmt_printf, T&& ... args)
+{
+	GPrintInvalidate(x, y, st_format_printf(ST::substitute_invalid, fmt_printf, std::forward<T>(args) ...));
+}
 
 
 // VIDEO OVERLAY STUFF
 VIDEO_OVERLAY* RegisterVideoOverlay(OVERLAY_CALLBACK callback, INT16 x, INT16 y, INT16 w, INT16 h);
-VIDEO_OVERLAY* RegisterVideoOverlay(OVERLAY_CALLBACK callback, INT16 x, INT16 y, SGPFont font, UINT8 foreground, UINT8 background, wchar_t const* text);
+VIDEO_OVERLAY* RegisterVideoOverlay(OVERLAY_CALLBACK callback, INT16 x, INT16 y, SGPFont font, UINT8 foreground, UINT8 background, const ST::utf32_buffer& codepoints);
+VIDEO_OVERLAY* RegisterVideoOverlay(OVERLAY_CALLBACK callback, INT16 x, INT16 y, SGPFont font, UINT8 foreground, UINT8 background, const ST::string& str);
 void ExecuteVideoOverlays(void);
 void SaveVideoOverlaysArea(SGPVSurface* src);
 
@@ -90,7 +102,12 @@ void ExecuteVideoOverlaysToAlternateBuffer(SGPVSurface* buffer);
 void RemoveVideoOverlay(VIDEO_OVERLAY*);
 void RestoreShiftedVideoOverlays(INT16 sShiftX, INT16 sShiftY);
 void EnableVideoOverlay(BOOLEAN fEnable, VIDEO_OVERLAY*);
-void SetVideoOverlayTextF(VIDEO_OVERLAY*, const wchar_t* fmt, ...);
+void SetVideoOverlayText(VIDEO_OVERLAY* v, const ST::string& str);
+template <typename ... T>
+inline void SetVideoOverlayTextF(VIDEO_OVERLAY* v, const ST::string& fmt_printf, T&& ... args)
+{
+	SetVideoOverlayText(v, st_format_printf(ST::substitute_invalid, fmt_printf, std::forward<T>(args) ...));
+}
 void SetVideoOverlayPos(VIDEO_OVERLAY*, INT16 X, INT16 Y);
 
 void BlitBufferToBuffer(SGPVSurface* src, SGPVSurface* dst, UINT16 usSrcX, UINT16 usSrcY, UINT16 usWidth, UINT16 usHeight);
