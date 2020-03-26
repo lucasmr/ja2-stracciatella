@@ -109,7 +109,7 @@ TEST(LoadSaveData, utf16ToWideString)
 
 	{
 		DataReader reader(buf);
-		EXPECT_EQ(reader.readUTF16(5), "тест"_st);
+		EXPECT_EQ(reader.readUTF16(5), "тест");
 
 		EXPECT_EQ(reader.getConsumed(), 10u);
 		EXPECT_EQ(writer.getConsumed(), 10u);
@@ -139,7 +139,7 @@ TEST(LoadSaveData, utf32ToWideString)
 
 	{
 		DataReader reader(buf);
-		EXPECT_EQ(reader.readUTF32(5), "тест"_st);
+		EXPECT_EQ(reader.readUTF32(5), "тест");
 
 		EXPECT_EQ(reader.getConsumed(), 20u);
 		EXPECT_EQ(writer.getConsumed(), 20u);
