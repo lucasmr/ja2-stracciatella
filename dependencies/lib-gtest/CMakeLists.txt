@@ -1,35 +1,27 @@
-include(ExternalProject)
+# \file dependencies/lib-gtest/CMakeLists.txt
 
+message(STATUS "<gtest>")
+
+# create getter
+set(SRC_DIR "${CMAKE_BINARY_DIR}/lib-gtest/src")
+set(BUILD_DIR "${CMAKE_BINARY_DIR}/lib-gtest/build")
 configure_file(
-    "${CMAKE_SOURCE_DIR}/cmake/external-project-cache.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/external-project-cache.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/getter/CMakeLists.txt.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/getter/CMakeLists.txt"
     @ONLY
 )
 
-externalproject_add(gtest-internal
-    URL "https://github.com/google/googletest/archive/release-1.8.1.tar.gz"
-    INSTALL_DIR "${CMAKE_BINARY_DIR}/lib-gtest"
-    CMAKE_ARGS
-        "-C${CMAKE_CURRENT_BINARY_DIR}/external-project-cache.cmake"
-        "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/lib-gtest"
-        -Dgtest_force_shared_crt=TRUE
-        -Dgtest_disable_pthreads=TRUE
-    # NOTE this will always use the initial config in multi-config projects
-    BUILD_COMMAND "${CMAKE_COMMAND}" --build . --config "${CMAKE_BUILD_TYPE}"
-    INSTALL_COMMAND "${CMAKE_COMMAND}" --build . --target install --config "${CMAKE_BUILD_TYPE}"
-)
+# execute getter
+execute_process(COMMAND ${CMAKE_COMMAND} . "-G${CMAKE_GENERATOR}" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/getter")
+execute_process(COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/getter")
 
+# library
+set(BUILD_GMOCK OFF CACHE BOOL "no gmock" FORCE)
+set(INSTALL_GTEST OFF CACHE BOOL "no install, gtest is integrated" FORCE)
+set(gtest_force_shared_crt ON CACHE BOOL "always use shared (DLL) run-time lib" FORCE)
+set(gtest_disable_pthreads ON CACHE BOOL "no pthreads in gtest" FORCE)
+mark_as_advanced(BUILD_GMOCK INSTALL_GTEST gtest_force_shared_crt gtest_disable_pthreads)
+add_subdirectory("${SRC_DIR}" "${BUILD_DIR}")
+set(GTEST_LIBRARIES gtest PARENT_SCOPE)
 
-set(LIB_SUFFIX "")
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(LIB_SUFFIX "d")
-endif()
-
-set(GTEST_INCLUDE_DIRS
-    "${CMAKE_BINARY_DIR}/lib-gtest/include"
-    PARENT_SCOPE
-)
-set(GTEST_LIBRARIES
-    "${CMAKE_BINARY_DIR}/lib-gtest/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${LIB_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    PARENT_SCOPE
-)
+message(STATUS "</gtest>")
